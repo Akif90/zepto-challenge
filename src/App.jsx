@@ -59,7 +59,7 @@ const App = () => {
           {dialogBoxActive && (
             <div
               ref={dialogRef}
-              className="absolute w-[400px] h-[300px] top-8 overflow-y-scroll"
+              className="absolute w-[400px] h-fit top-8 overflow-y-scroll"
             >
               <List tags={tags} setTags={setTags} searchQuery={searchQuery} />
             </div>
