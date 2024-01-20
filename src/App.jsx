@@ -8,28 +8,37 @@ const App = () => {
   const [tags, setTags] = useState([]);
   const inputRef = useRef(null);
   const dialogRef = useRef(null);
+  let flag = false;
   const [dialogBoxActive, setDialogBoxActive] = useState(false);
   const filteredInfo = info.filter((item) => tags.includes(item.email));
   useEffect(() => {
-    if (dialogRef.current != null && inputRef.current != null) {
-      document.addEventListener("click", (e) => {
-        if (
-          dialogRef.current.contains(e.target) === false &&
-          inputRef.current.contains(e.target) === false
-        )
-          setDialogBoxActive(false);
-      });
-    }
-  }, [dialogRef, inputRef]);
+    const handleClickOutside = (e) => {
+      if (
+        dialogRef.current &&
+        !dialogRef.current.contains(e.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target)
+      ) {
+        setDialogBoxActive(false);
+      }
+    };
+    document.addEventListener("click", (e) => handleClickOutside(e));
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
   const handleKeyDown = (e) => {
     if (e.key === "Backspace" && inputRef.current.value === "") {
+      if (filteredInfo.length === 0) return;
       const lastTagEmail = filteredInfo[filteredInfo.length - 1].email;
       const lastTagEl = document.querySelectorAll(
         `[data-id="${lastTagEmail}"]`
       )[0];
-      lastTagEl.dataset.delete = "yes";
-      console.log(lastTagEl.dataset.delete);
-      lastTagEl.focus();
+      if (!flag) {
+        lastTagEl.style.border = "2px solid black";
+        flag = true;
+      } else {
+        flag = false;
+        setTags(tags.filter((item) => item != lastTagEmail));
+      }
     }
   };
   return (
@@ -54,7 +63,9 @@ const App = () => {
             onKeyDown={(e) => handleKeyDown(e)}
             className="focus:outline-none text-lg"
             onFocus={() => setDialogBoxActive(true)}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
           />
           {dialogBoxActive && (
             <div

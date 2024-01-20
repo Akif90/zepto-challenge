@@ -12,6 +12,7 @@ const ListItems = ({
       return [...prev, email];
     });
   };
+
   return (
     <div
       onClick={handleClick}
